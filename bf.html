@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="bf.js"></script>
+		<style>
+			#source, #input, #output {
+				font-family:monospace;
+				width: 70%;
+				border: 1px solid #ccc;
+				padding: 0.25em;
+			}
+			
+			pre {
+			 white-space: pre-wrap;       /* css-3 */
+			 white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+			 white-space: -pre-wrap;      /* Opera 4-6 */
+			 white-space: -o-pre-wrap;    /* Opera 7 */
+			 word-wrap: break-word;       /* Internet Explorer 5.5+ */
+			}
+			
+			#stats {
+				float: right;
+				width: 25%;				
+			}
+		</style>
+	</head>
+	<body>
+		<div id="stats">
+			<button id="execute" onclick="execute()">Execute</button>
+			<button id="terminate" onclick="terminate()" disabled>Terminate</button>
+			<ol id="data" start="0"></ol>
+		</div>
+		<div>
+			<h2><label for="source">bf Source Code</label></h2>
+			<pre id="source" contenteditable="">Sample from http://www(dot)xappsoftware(dot)com/wordpress/2011/03/19/brainfuck(minus)sample(minus)code/
++++++ +++++             initialize counter (cell #0) to 10
+[                       use loop to set the next four cells to 70/100/30/10
+    > +++++ ++              add  7 to cell #1
+    > +++++ +++++           add 10 to cell #2 
+    > +++                   add  3 to cell #3
+    > +                     add  1 to cell #4
+    <<<< -                  decrement counter (cell #0)
+]                   
+> ++ .                  print 'H'
+> + .                   print 'e'
++++++ ++ .              print 'l'
+.                       print 'l'
++++ .                   print 'o'
+> ++ .                  print ' '
+<< +++++ +++++ +++++ .  print 'W'
+> .                     print 'o'
++++ .                   print 'r'
+----- - .               print 'l'
+----- --- .             print 'd'
+> + .                   print '!'
+> .                     print '\n'</pre>
+			<h2><label for="input">Input</label></h2>
+			<input id="input" placeholder="<No input>"/>
+			<h2><label for="output">Output</label></h2>
+			<input id="output" placeholder="<No output>" disabled/>
+		</div>		
+		
+		<script>			
+			var script;			
+			var timer;
+			var src = document.getElementById("source");
+			var dat = document.getElementById("data");
+			var inp = document.getElementById("input");
+			var oup = document.getElementById("output");
+			var exe = document.getElementById("execute");
+			var trm = document.getElementById("terminate");
+			
+			function execute() {								
+				inp.disabled = true;
+				src.setAttribute("contenteditable", "false");
+				exe.disabled = true;
+				trm.disabled = false;
+				
+				var text = src.innerText || src.textContent;
+				script = new Script(text, inp.value);				
+				step();
+			}
+			
+			function step() {
+				if (script.ip < script.source.length) {
+					script.step();
+					
+					src.innerHTML = script.source.substr(0, script.ip);
+					src.innerHTML += "<mark>" + script.source.charAt(script.ip) + "</mark>";	
+					src.innerHTML += script.source.substr(script.ip + 1);		
+			
+					dat.innerHTML = script.data.map(function (el) {
+						return "<li>" + el + "</li>";
+					}).join("");
+					if (dat.children[script.dp])
+						dat.children[script.dp].setAttribute("style", "text-decoration:underline");
+					
+					oup.value = script.output;
+					
+					timer = setTimeout(step, 0);
+				} else {
+					terminate();
+				}
+			}
+			
+			function terminate() {								
+				clearTimeout(timer);
+				inp.disabled = false;
+				src.setAttribute("contenteditable", "true");
+				exe.disabled = false;
+				trm.disabled = true;		
+			}
+			
+			
+			//var test = new Script();
+			//var test = new Script("+>++>+++>++++<-<-<-");
+			//console.log(test);
+			//test.execute();			
+		</script>
+	</body>
+</html>
