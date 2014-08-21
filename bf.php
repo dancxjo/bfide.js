@@ -8,7 +8,7 @@ class Script {
 	protected $output;
 	protected $data;
 	protected $dp = 0;
-	protected $callstack;	
+	protected $callstack;
 	
 	function __construct($source, $input=null) {
 		$this->source = $source;
@@ -18,11 +18,14 @@ class Script {
 		$this->callstack = array();
 	}
 	
-	function execute() {
+	function execute($timeout) {
 		$n = 0;
 		while ($this->sp < strlen($this->source)) {
 			$this->step();
 			$n++;
+			if ($timeout && $n >= $timeout) {
+				throw new Exception("Time out");
+			}
 		}
 		return $n;
 	}
@@ -106,7 +109,7 @@ $start = microtime();
 $source = $_REQUEST['source'];
 $input = explod(",", $_REQUEST['input']);
 $script = new Script($source, $input);
-$steps = $script->execute();
+$steps = $script->execute($_REQUEST['timeout']);
 echo json_encode(array(
 	'duration'	=>	microtime()-$start, 
 	'result'	=>	$script->getOutput(), 
