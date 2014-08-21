@@ -111,9 +111,9 @@ $input = explode(",", $_REQUEST['input']);
 $script = new Script($source, $input);
 $steps = $script->execute($_REQUEST['timeout']);
 echo json_encode(array(
-	'duration'	=>	microtime()-$start, 
-	'result'	=>	$script->getOutput(), 
-	'steps'		=	$steps
+	'time'		=>	microtime()-$start, 
+	'output'	=>	$script->getOutput(), 
+	'steps'		=>	$steps
 ));
 
 ?>
