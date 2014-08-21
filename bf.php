@@ -107,13 +107,13 @@ class Script {
 $start = microtime();
 //$script = new Script(",>,[-<+>]<.", array(2, 2));
 $source = $_REQUEST['source'];
-$input = explod(",", $_REQUEST['input']);
+$input = explode(",", $_REQUEST['input']);
 $script = new Script($source, $input);
 $steps = $script->execute($_REQUEST['timeout']);
 echo json_encode(array(
 	'duration'	=>	microtime()-$start, 
 	'result'	=>	$script->getOutput(), 
-	'steps'		=>  $steps
+	'steps'		=	$steps
 ));
 
 ?>
