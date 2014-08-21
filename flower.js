@@ -19,5 +19,5 @@ var adder = new Flower(function () {
   var b = Math.floor(Math.random() * 255);
   return new Fruit([a, b], [a+b]);
 }, function (results, output) {
-  return output[0] - results.output[0] / results.time;
+  return results.time / (output[0] - results.output[0]);
 });
