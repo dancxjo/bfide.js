@@ -11,6 +11,14 @@ function Script(source, input) {
 	this.timeout = null;
 }
 
+Script.prototype.onerror = function (e) {
+	console.log(e);
+}
+
+Script.prototype.onend = function () {
+	console.log("Script finished");
+}
+
 Script.prototype.execute = function () {
 	console.log(this.ip);
 	if (this.ip >= this.source.length) {
@@ -18,6 +26,7 @@ Script.prototype.execute = function () {
 		if (this.timeout !== null) {
 			window.clearTimeout(this.timeout);
 		}
+		this.onend();
 	} else {
 		this.running = true;
 		var self = this;
