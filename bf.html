@@ -7,6 +7,9 @@
 	<body>
 	  <script>
 	    var sample = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+	    sample.onend = function () {
+	    	console.log("Script finished with output " + this.output);
+	    }
 	    sample.execute();
 	  </script>
 	</body>
