@@ -7,6 +7,22 @@ function Script(source, input) {
 	this.ip = 0;
 	this.inputp = 0;
 	this.cs = [];
+	this.runing = false;
+	this.timeout = null;
+}
+
+Script.prototype.execute = function () {
+	if (this.ip >= this.source.length) {
+		this.running = false;
+		if (this.timeout !== null) {
+			window.clearTimeout(this.timeout);
+		}
+	} else {
+		this.running = true;
+		var self = this;
+		this.step();
+		this.timeout = window.setTimeout(function(){self.execute();}, 0);
+	}
 }
 
 Script.prototype.rawExecute = function () {
