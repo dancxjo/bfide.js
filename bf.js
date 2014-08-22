@@ -12,6 +12,7 @@ function Script(source, input) {
 }
 
 Script.prototype.execute = function () {
+	console.log(this.ip);
 	if (this.ip >= this.source.length) {
 		this.running = false;
 		if (this.timeout !== null) {
