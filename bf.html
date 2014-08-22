@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script src="bf.js"></script>
+	</head>
+	<body>
+	  <script>
+	    var sample = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+	    sample.execute();
+	    while (sample.running) {
+	      document.write(". ");
+	    }
+	    document.write(sample.output);
+	  </script>
+	</body>
+</html>
