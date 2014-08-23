@@ -18,14 +18,27 @@
 			</tr>
 		</table>
 		<script src="bf.js"></script>
-		<script>
-			var sample = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
-			sample.onend = function () {
-				console.log("Script finished with output " + this.output);
-			}
-			sample.execute();
-		</script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script>
+			for (var i = 0; i < 10; i++) {
+				var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+
+				var row = script.row = $("#progs").append("<tr></tr>");
+				script.fields = [];
+				script.fields['source'] = row.append("<td></td>");
+				script.fields['status'] = row.append("<td></td>");
+				script.fields['time'] = row.append("<td></td>");
+				script.fields['output'] = row.append("<td></td>");
+				script.fields['fitness'] = row.append("<td></td>");
+				
+				script.fields['source'].html(script.source);
+				script.onend = function () {
+					this.fields['status'].html("complete");
+					this.fields['output'].html(this.output);
+				}
+				script.execute();
+			}
+		</script>
 	</body>
 </html>
