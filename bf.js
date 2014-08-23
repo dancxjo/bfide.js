@@ -35,7 +35,7 @@ Script.prototype.terminate = function () {
 }
 
 Script.prototype.execute = function (continuing) {
-	if (this.ip >= this.source.length) {
+	if (this.ip >= this.source.length || this.errorstate) {
 		this.terminate();
 	} else {
 		if (!this.running) {
@@ -52,7 +52,7 @@ Script.prototype.execute = function (continuing) {
 		this.onstep();
 		
 		var self = this;
-		this.timeout = window.setTimeout(function(){self.execute();}, 0);
+		this.timeout = window.setTimeout(function(){self.execute();}, 1000);
 	}
 }
 
@@ -90,7 +90,12 @@ Script.prototype.step = function () {
 			break;
 		case ',':
 			try {
-				this.data[this.dp] = this.input[this.inputp++].charCodeAt(0);			
+				var v = 0;
+				if (this.inputp < this.input.length) {
+					v = this.input[this.inputp++].charCodeAt(0);
+				}
+
+				this.data[this.dp] = v;			
 			} catch (e) {
 				this.onerror(e);
 			}
