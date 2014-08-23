@@ -13,6 +13,7 @@
 				<th>Source</th>
 				<th>Status</th>
 				<th>Run time</th>
+				<th>Steps</th>
 				<th>Output</th>
 				<th>Fitness</th>
 			</tr>
@@ -34,6 +35,7 @@
 			for (var i = 0; i < 10; i++) {
 				//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
 				var script = new Script(randomScript());
+				script.watchdog = 1000;
 				var row = table.insertRow(-1);
 				script.row = row;
 				
@@ -41,6 +43,7 @@
 				script.fields['source'] = row.insertCell(-1);
 				script.fields['status'] = row.insertCell(-1);
 				script.fields['time'] = row.insertCell(-1);
+				script.fields['steps'] = row.insertCell(-1);
 				script.fields['output'] = row.insertCell(-1);
 				script.fields['fitness'] = row.insertCell(-1);
 				
@@ -49,6 +52,7 @@
 				
 				script.onstep = function () {
 					this.fields['time'].innerHTML = Math.floor(this.runtime);
+					this.fields['steps'].innerHTML = this.steps;
 					this.fields['status'].innerHTML = this.errorstate ? this.errorstate.message : this.running ? "Running" : "Terminated";
 					if (this.errorstate) {
 						this.row.className = "danger";

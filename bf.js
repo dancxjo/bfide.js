@@ -10,6 +10,8 @@ function Script(source, input) {
 	this.runing = false;
 	this.timeout = null;
 	this.errorstate = 0;
+	this.steps = 0;
+	this.watchdog = undefined;
 }
 
 Script.prototype.onstart = function () {
@@ -48,11 +50,16 @@ Script.prototype.execute = function (continuing) {
 		}
 		
 		this.step();
+		this.steps++;
 		this.runtime = window.performance.now() - this.starttime;
 		this.onstep();
 		
-		var self = this;
-		this.timeout = window.setTimeout(function(){self.execute();}, 1000);
+		if (!this.watchdog || this.steps <= this.watchdog) {
+			var self = this;
+			this.timeout = window.setTimeout(function(){self.execute();}, 0);
+		} else {
+			this.onerror(new Error("Watchdog exceeded"));
+		}
 	}
 }
 
