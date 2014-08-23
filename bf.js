@@ -19,17 +19,28 @@ Script.prototype.onend = function () {
 	console.log("Script finished");
 }
 
+Script.prototype.onstep = function () {
+	
+}
+
+Script.prototype.terminate = function () {
+	this.running = false;
+	if (this.timeout !== null) {
+		window.clearTimeout(this.timeout);
+	}
+	this.onend();
+}
+
 Script.prototype.execute = function () {
 	if (this.ip >= this.source.length) {
-		this.running = false;
-		if (this.timeout !== null) {
-			window.clearTimeout(this.timeout);
-		}
-		this.onend();
+		this.terminate();
 	} else {
 		this.running = true;
-		var self = this;
+		
 		this.step();
+		this.onstep();
+		
+		var self = this;
 		this.timeout = window.setTimeout(function(){self.execute();}, 0);
 	}
 }
