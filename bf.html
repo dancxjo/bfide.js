@@ -3,8 +3,8 @@
 	<head>
 		<meta charset="UTF-8">
 		
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 		
 	</head>
 	<body>
@@ -18,27 +18,47 @@
 			</tr>
 		</table>
 		<script src="bf.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script>
-			var row = $("#progs").append("<tr></tr>");
-			var cell = row.append("<td></td>");
-			cell.html("Test1");
-			for (var i = 0; i < 0; i++) {
-				var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
-
-				var row = script.row = $("#progs").append("<tr></tr>");
-				script.fields = [];
-				script.fields['source'] = row.append("<td></td>");
-				script.fields['status'] = row.append("<td></td>");
-				script.fields['time'] = row.append("<td></td>");
-				script.fields['output'] = row.append("<td></td>");
-				script.fields['fitness'] = row.append("<td></td>");
+			function randomScript() {
+				var chars = "[]<>+-.,";
+				var script = "";
+				for (var i = 0; i < Math.random() * 255; i++) {
+					script += chars[Math.floor(Math.random()*chars.length)];
+				}
+				return script;
+			}
+		
+			var table = document.getElementById("progs");
+			for (var i = 0; i < 10; i++) {
+				//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+				var script = new Script(randomScript());
+				var row = table.insertRow(-1);
+				script.row = row;
 				
-				script.fields['source'].html(script.source);
+				script.fields = [];
+				script.fields['source'] = row.insertCell(-1);
+				script.fields['status'] = row.insertCell(-1);
+				script.fields['time'] = row.insertCell(-1);
+				script.fields['output'] = row.insertCell(-1);
+				script.fields['fitness'] = row.insertCell(-1);
+				
+				script.fields['source'].innerHTML = script.source;
+				script.fields['source'].style.overflow = "autoscroll";
+				
+				script.onstep = function () {
+					this.fields['time'].innerHTML = Math.floor(this.runtime);
+					this.fields['status'].innerHTML = this.errorstate ? this.errorstate.message : this.running ? "Running" : "Terminated";
+					if (this.errorstate) {
+						this.row.className = "danger";
+					}
+				}
+				
 				script.onend = function () {
-					this.fields['status'].html("complete");
-					this.fields['output'].html(this.output);
+					this.row.className = this.errorstate ? "warning" : "success";
+					this.fields['status'].innerHTML = this.errorstate ? this.errorstate.message : "Complete";
+					this.fields['output'].innerHTML = this.output;
 				}
 				script.execute();
 			}

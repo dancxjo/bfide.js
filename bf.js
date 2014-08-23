@@ -9,18 +9,21 @@ function Script(source, input) {
 	this.cs = [];
 	this.runing = false;
 	this.timeout = null;
+	this.errorstate = 0;
+}
+
+Script.prototype.onstart = function () {
 }
 
 Script.prototype.onerror = function (e) {
-	console.log(e);
+	this.errorstate = e;
+	this.terminate();
 }
 
 Script.prototype.onend = function () {
-	console.log("Script finished");
 }
 
 Script.prototype.onstep = function () {
-	
 }
 
 Script.prototype.terminate = function () {
@@ -31,13 +34,21 @@ Script.prototype.terminate = function () {
 	this.onend();
 }
 
-Script.prototype.execute = function () {
+Script.prototype.execute = function (continuing) {
 	if (this.ip >= this.source.length) {
 		this.terminate();
 	} else {
-		this.running = true;
+		if (!this.running) {
+			if (!continuing) {
+				this.ip = 0;
+				this.starttime = window.performance.now();
+				this.onstart();
+			}
+			this.running = true;
+		}
 		
 		this.step();
+		this.runtime = window.performance.now() - this.starttime;
 		this.onstep();
 		
 		var self = this;
@@ -77,17 +88,20 @@ Script.prototype.step = function () {
 		case '.':
 			this.output += String.fromCharCode(this.data[this.dp]);			
 			break;
-		case ',':			
-			this.data[this.dp] = this.input[this.inputp++].charCodeAt(0);			
+		case ',':
+			try {
+				this.data[this.dp] = this.input[this.inputp++].charCodeAt(0);			
+			} catch (e) {
+				this.onerror(e);
+			}
 			break;
 		case '[':
 			if (!this.data[this.dp]) {
-				console.log("Skipping this loop");
 				var nextOp = this.source[this.ip++];
 				var depth = 1;
 				while (depth > 0) {
 					if (this.ip >= this.source.length)
-						throw new SyntaxError("Unmatched [ at "+this.ip);
+						this.onerror(new SyntaxError("Unmatched [ at "+this.ip));
 					nextOp = this.source[this.ip++];
 					switch (nextOp) {
 						case '[': depth++; break;
@@ -100,7 +114,7 @@ Script.prototype.step = function () {
 			break;
 		case ']':
 			if (this.cs.length == 0)
-				throw new SyntaxError("Unmatched ] at "+this.ip);
+				this.onerror(new SyntaxError("Unmatched ] at "+this.ip));
 			if (!this.data[this.dp]) {
 				this.cs.pop();				
 			} else {
@@ -109,5 +123,12 @@ Script.prototype.step = function () {
 			}
 			break;
 	}	
-	this.ip++;	
+
+	if (this.dp < 0) {
+		this.onerror(new RangeError("Unmatched [ at "+this.ip));
+	}
+
+	this.ip++;
+	
+
 }
