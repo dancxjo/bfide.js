@@ -5,12 +5,21 @@
 		<script src="bf.js"></script>
 	</head>
 	<body>
-	  <script>
-	    var sample = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
-	    sample.onend = function () {
-	    	console.log("Script finished with output " + this.output);
-	    }
-	    sample.execute();
-	  </script>
+		<table id="progs">
+			<tr>
+				<th>Source</th>
+				<th>Status</th>
+				<th>Run time</th>
+				<th>Output</th>
+				<th>Fitness</th>
+			</tr>
+		</table>
+		<script>
+			var sample = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+			sample.onend = function () {
+				console.log("Script finished with output " + this.output);
+			}
+			sample.execute();
+		</script>
 	</body>
 </html>
