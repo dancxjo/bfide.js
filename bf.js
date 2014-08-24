@@ -13,6 +13,7 @@ function Script(source, input) {
 	this.steps = 0;
 	this.watchdog = undefined;
 	this.delay = 0;
+	this.wrap = true;
 }
 
 Script.prototype.onstart = function () {
@@ -170,11 +171,17 @@ Script.prototype.step = function () {
 			}
 			break;
 	}	
-
+	
 	if (this.dp < 0) {
 		this.throw(new RangeError("Out of data bounds at "+this.ip));
 	}
 
+	if (this.wrap) {
+		if (this.data[this.dp] > 255 || this.data[this.dp] < 0) {
+			this.data[this.dp] = this.data[this.dp] % 255;
+		}
+	}
+	
 	this.ip++;
 	
 
