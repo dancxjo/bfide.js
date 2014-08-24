@@ -76,7 +76,7 @@
 						this.row.className = "danger";
 					}
 					
-					this.fields['source'].innerHTML += this.highlightCode("span", {class: 'bg-primary'}, -1);		
+					this.fields['source'].innerHTML = this.highlightCode("span", {class: 'bg-primary'}, -1);		
 					
 					this.fields['data'].innerHTML = this.data.map(function (el) {
 						return "<li>" + el + "</li>";
