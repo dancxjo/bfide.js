@@ -14,7 +14,7 @@
 				<th>Status</th>
 				<th>Run time</th>
 				<th>Steps</th>
-				<th>Output</th>
+				<th style="width: 20%">Output</th>
 				<th>Data</th>
 			</tr>
 		</table>
@@ -46,8 +46,8 @@
 				
 				script.fields = [];
 				
-				script.fields['source'] = row.insertCell(-1);
-				script.slider = script.fields['source'].appendChild(document.createElement("input"));
+				script.fields.source = row.insertCell(-1);
+				script.slider = script.fields.source.appendChild(document.createElement("input"));
 				script.slider.type = "range";
 				script.slider.value = script.delay;
 				script.slider.setAttribute("max", 1000);
@@ -55,42 +55,42 @@
 				script.slider.onchange = function () {
 					this.script.delay = this.value;
 				};
-				script.fields['source'] = script.fields['source'].appendChild(document.createElement("code"));
-				script.fields['status'] = row.insertCell(-1);
-				script.fields['time'] = row.insertCell(-1);
-				script.fields['steps'] = row.insertCell(-1);
-				script.fields['output'] = row.insertCell(-1);
-				script.fields['data'] = row.insertCell(-1);
+				script.fields.source = script.fields.source.appendChild(document.createElement("code"));
+				script.fields.status = row.insertCell(-1);
+				script.fields.time = row.insertCell(-1);
+				script.fields.steps = row.insertCell(-1);
+				script.fields.output = row.insertCell(-1);
+				script.fields.data = row.insertCell(-1);
 
-				script.fields['data'] = script.fields['data'].appendChild(document.createElement("ol"));
-
+				script.fields.data = script.fields.data.appendChild(document.createElement("ol"));
+				script.fields.data.setAttribute("start", 0);
 				
-				script.fields['source'].innerHTML = script.source.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-				script.fields['source'].style.overflow = "autoscroll";
+				script.fields.source.innerHTML = script.source.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+				script.fields.source.style.overflow = "autoscroll";
 				
 				script.onstep = function () {
-					this.fields['time'].innerHTML = Math.floor(this.runtime);
-					this.fields['steps'].innerHTML = this.steps;
-					this.fields['status'].innerHTML = this.errorstate ? this.errorstate.message : this.running ? "Running" : "Terminated";
+					this.fields.time.innerHTML = Math.floor(this.runtime);
+					this.fields.steps.innerHTML = this.steps;
+					this.fields.status.innerHTML = this.errorstate ? this.errorstate.message : this.running ? "Running" : "Terminated";
 					if (this.errorstate) {
 						this.row.className = "danger";
 					}
 					
-					this.fields['source'].innerHTML = this.highlightCode("span", {class: 'bg-primary'}, -1);		
+					this.fields.source.innerHTML = this.highlightCode("span", {class: 'bg-primary'}, -1);		
 					
-					this.fields['data'].innerHTML = this.data.map(function (el) {
+					this.fields.data.innerHTML = this.data.map(function (el) {
 						return "<li>" + el + "</li>";
 					}).join("");
-					if (this.fields['data'].children[this.dp])
-						this.fields['data'].children[this.dp].setAttribute("style", "text-decoration:underline");
+					if (this.fields.data.children[this.dp])
+						this.fields.data.children[this.dp].setAttribute("style", "text-decoration:underline");
 
 					this.fields.output.innerHTML = this.output;
 				}
 				
 				script.onend = function () {
 					this.row.className = this.errorstate ? "warning" : "success";
-					this.fields['status'].innerHTML = this.errorstate ? this.errorstate.message : "Complete";
-					this.fields['output'].innerHTML = this.output;
+					this.fields.status.innerHTML = this.errorstate ? this.errorstate.message : "Complete";
+					this.fields.output.innerHTML = this.output;
 				}
 				script.execute();
 			}
