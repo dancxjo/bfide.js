@@ -181,7 +181,7 @@ Script.prototype.step = function () {
 			this.data[this.dp] -= 255;
 		}
 		while (this.data[this.dp] < 0) {
-			this.data[this.dp] += 255;
+			this.data[this.dp] += 256;
 		}
 	}
 	
