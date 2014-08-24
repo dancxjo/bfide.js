@@ -32,9 +32,8 @@
 				return script;
 			}
 		
-			var table = document.getElementById("progs");
-			for (var i = 0; i < 10; i++) {
-				//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+			function spawn() {
+			//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
 				var source = randomScript();
 				//alert(source);
 				console.log(source);
@@ -74,7 +73,8 @@
 				script.fields.output.style.wordBreak = "break-all";
 				
 				script.onerror = function (e) {
-					$(this.row).fadeOut(5000);
+					$(this.row).fadeOut(1000);
+					spawn();
 				}
 				
 				script.onstep = function () {
@@ -102,6 +102,11 @@
 					this.fields.output.innerHTML = this.output;
 				}
 				script.execute();
+			}
+		
+			var table = document.getElementById("progs");
+			for (var i = 0; i < 10; i++) {
+				spawn();
 			}
 		</script>
 	</body>
