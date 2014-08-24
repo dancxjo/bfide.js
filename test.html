@@ -32,7 +32,7 @@
 			}
 		
 			var table = document.getElementById("progs");
-			for (var i = 0; i < 20; i++) {
+			for (var i = 0; i < 10; i++) {
 				//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
 				var source = randomScript();
 				//alert(source);
@@ -61,12 +61,16 @@
 				script.fields.steps = row.insertCell(-1);
 				script.fields.output = row.insertCell(-1);
 				script.fields.data = row.insertCell(-1);
-
+				
 				script.fields.data = script.fields.data.appendChild(document.createElement("ol"));
 				script.fields.data.setAttribute("start", 0);
 				
 				script.fields.source.innerHTML = script.source.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-				script.fields.source.style.overflow = "autoscroll";
+				script.fields.source.style.overflow = "auto";
+				script.fields.source.style.wordBreak = "break-all";
+				
+				script.fields.output.style.overflow = "auto";
+				script.fields.output.style.wordBreak = "break-all";
 				
 				script.onstep = function () {
 					this.fields.time.innerHTML = Math.floor(this.runtime);
