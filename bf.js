@@ -178,7 +178,7 @@ Script.prototype.step = function () {
 
 	if (this.wrap) {
 		while (this.data[this.dp] > 255) {
-			this.data[this.dp] -= 255;
+			this.data[this.dp] -= 256;
 		}
 		while (this.data[this.dp] < 0) {
 			this.data[this.dp] += 256;
