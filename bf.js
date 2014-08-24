@@ -12,6 +12,7 @@ function Script(source, input) {
 	this.errorstate = 0;
 	this.steps = 0;
 	this.watchdog = undefined;
+	this.delay = 0;
 }
 
 Script.prototype.onstart = function () {
@@ -37,6 +38,14 @@ Script.prototype.terminate = function () {
 }
 
 Script.prototype.execute = function (continuing) {
+	/*
+	var il;
+	if ((il = this.source.search("[]")) > -1) {
+		console.log("Infinite loop detected");
+		this.onerror(new Error("Infinite loop at " + il));
+		this.terminate();
+	}
+	*/
 	if (this.ip >= this.source.length || this.errorstate) {
 		this.terminate();
 	} else {
@@ -56,7 +65,7 @@ Script.prototype.execute = function (continuing) {
 		
 		if (!this.watchdog || this.steps <= this.watchdog) {
 			var self = this;
-			this.timeout = window.setTimeout(function(){self.execute();}, 0);
+			this.timeout = window.setTimeout(function(){self.execute();}, this.delay);
 		} else {
 			this.onerror(new Error("Watchdog exceeded"));
 		}
@@ -72,6 +81,24 @@ Script.prototype.rawExecute = function () {
 		console.log("Step " + n + ": " + JSON.stringify(this));
 	}
 	return [window.performance.now() - start, n, this.output];
+}
+
+Script.prototype.highlightCode = function (el, attr, offset) {
+	var s = "";
+	var h = this.source.substr(0, this.ip + offset);
+	var m = this.source[this.ip + offset];
+	var t = this.source.substr(this.ip + 1 + offset);
+	
+	s += h ? h : "";
+	s += "<" + el;
+	for (var key in attr) {
+		s += " " + key + "=\"" + attr[key] + "\"";
+	}
+	s += ">";
+	s += m ? m : "";
+	s += "</" + el + ">";
+	s += t ? t : "";
+	return s;
 }
 
 Script.prototype.step = function () {	
@@ -109,17 +136,21 @@ Script.prototype.step = function () {
 			break;
 		case '[':
 			if (!this.data[this.dp]) {
+				var origp = this.ip;
 				var nextOp = this.source[this.ip++];
 				var depth = 1;
-				while (depth > 0) {
-					if (this.ip >= this.source.length)
-						this.onerror(new SyntaxError("Unmatched [ at "+this.ip));
+				while (depth > 0 && this.ip < this.source.length) {
+					
 					nextOp = this.source[this.ip++];
 					switch (nextOp) {
 						case '[': depth++; break;
 						case ']': depth--; break;
-					}					
-				}				
+					}
+					console.log(nextOp + " " + depth);
+				}	
+				console.log(origp + " to " + this.ip);
+				if (this.ip >= this.source.length && depth > 0)
+					this.onerror(new SyntaxError("Unmatched [ at "+origp));				
 			} else {
 				this.cs.push(this.ip);
 			}			
@@ -137,7 +168,7 @@ Script.prototype.step = function () {
 	}	
 
 	if (this.dp < 0) {
-		this.onerror(new RangeError("Unmatched [ at "+this.ip));
+		this.onerror(new RangeError("Out of data bounds at "+this.ip));
 	}
 
 	this.ip++;

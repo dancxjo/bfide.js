@@ -10,12 +10,12 @@
 	<body>
 		<table id="progs" class="table">
 			<tr>
-				<th>Source</th>
+				<th style="width: 20%">Source</th>
 				<th>Status</th>
 				<th>Run time</th>
 				<th>Steps</th>
 				<th>Output</th>
-				<th>Fitness</th>
+				<th>Data</th>
 			</tr>
 		</table>
 		<script src="bf.js"></script>
@@ -32,22 +32,40 @@
 			}
 		
 			var table = document.getElementById("progs");
-			for (var i = 0; i < 1; i++) {
+			for (var i = 0; i < 20; i++) {
 				//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
-				var script = new Script(randomScript());
+				var source = randomScript();
+				//alert(source);
+				console.log(source);
+				var script = new Script(source);
+				//var script = new Script(",>,[-<->]", "93");
+				//var script = new Script("++++[]", "93");
 				script.watchdog = 1000;
-				var row = table.insertRow(-1);
+				var row = table.insertRow(1);
 				script.row = row;
 				
 				script.fields = [];
+				
 				script.fields['source'] = row.insertCell(-1);
+				script.slider = script.fields['source'].appendChild(document.createElement("input"));
+				script.slider.type = "range";
+				script.slider.value = script.delay;
+				script.slider.setAttribute("max", 1000);
+				script.slider.script = script;
+				script.slider.onchange = function () {
+					this.script.delay = this.value;
+				};
+				script.fields['source'] = script.fields['source'].appendChild(document.createElement("code"));
 				script.fields['status'] = row.insertCell(-1);
 				script.fields['time'] = row.insertCell(-1);
 				script.fields['steps'] = row.insertCell(-1);
 				script.fields['output'] = row.insertCell(-1);
-				script.fields['fitness'] = row.insertCell(-1);
+				script.fields['data'] = row.insertCell(-1);
+
+				script.fields['data'] = script.fields['data'].appendChild(document.createElement("ol"));
+
 				
-				script.fields['source'].innerHTML = script.source;
+				script.fields['source'].innerHTML = script.source.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 				script.fields['source'].style.overflow = "autoscroll";
 				
 				script.onstep = function () {
@@ -57,6 +75,16 @@
 					if (this.errorstate) {
 						this.row.className = "danger";
 					}
+					
+					this.fields['source'].innerHTML += this.highlightCode("span", {class: 'bg-primary'}, -1);		
+					
+					this.fields['data'].innerHTML = this.data.map(function (el) {
+						return "<li>" + el + "</li>";
+					}).join("");
+					if (this.fields['data'].children[this.dp])
+						this.fields['data'].children[this.dp].setAttribute("style", "text-decoration:underline");
+
+					this.fields.output.innerHTML = this.output;
 				}
 				
 				script.onend = function () {
