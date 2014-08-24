@@ -73,6 +73,10 @@
 				script.fields.output.style.overflow = "auto";
 				script.fields.output.style.wordBreak = "break-all";
 				
+				script.onerror = function (e) {
+					$(this.row).fadeOut(5000);
+				}
+				
 				script.onstep = function () {
 					this.fields.time.innerHTML = Math.floor(this.runtime);
 					this.fields.steps.innerHTML = this.steps;

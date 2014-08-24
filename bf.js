@@ -18,9 +18,13 @@ function Script(source, input) {
 Script.prototype.onstart = function () {
 }
 
-Script.prototype.onerror = function (e) {
+Script.prototype.throw = function (e) {
 	this.errorstate = e;
 	this.terminate();
+	this.onerror(e);
+}
+
+Script.prototype.onerror = function (e) {
 }
 
 Script.prototype.onend = function () {
@@ -67,7 +71,7 @@ Script.prototype.execute = function (continuing) {
 			var self = this;
 			this.timeout = window.setTimeout(function(){self.execute();}, this.delay);
 		} else {
-			this.onerror(new Error("Watchdog exceeded"));
+			this.throw(new Error("Watchdog exceeded"));
 		}
 	}
 }
@@ -131,7 +135,7 @@ Script.prototype.step = function () {
 
 				this.data[this.dp] = v;			
 			} catch (e) {
-				this.onerror(e);
+				this.throw(e);
 			}
 			break;
 		case '[':
@@ -150,14 +154,14 @@ Script.prototype.step = function () {
 				}	
 				console.log(origp + " to " + this.ip);
 				if (this.ip >= this.source.length && depth > 0)
-					this.onerror(new SyntaxError("Unmatched [ at "+origp));				
+					this.throw(new SyntaxError("Unmatched [ at "+origp));				
 			} else {
 				this.cs.push(this.ip);
 			}			
 			break;
 		case ']':
 			if (this.cs.length == 0)
-				this.onerror(new SyntaxError("Unmatched ] at "+this.ip));
+				this.throw(new SyntaxError("Unmatched ] at "+this.ip));
 			if (!this.data[this.dp]) {
 				this.cs.pop();				
 			} else {
@@ -168,7 +172,7 @@ Script.prototype.step = function () {
 	}	
 
 	if (this.dp < 0) {
-		this.onerror(new RangeError("Out of data bounds at "+this.ip));
+		this.throw(new RangeError("Out of data bounds at "+this.ip));
 	}
 
 	this.ip++;
