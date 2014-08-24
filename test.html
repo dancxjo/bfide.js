@@ -23,9 +23,10 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script>
 			function randomScript() {
+				var len = Math.random() * 255;
 				var chars = "[]<>+-.,";
 				var script = "";
-				for (var i = 0; i < Math.random() * 255; i++) {
+				for (var i = 0; i < len; i++) {
 					script += chars[Math.floor(Math.random()*chars.length)];
 				}
 				return script;
