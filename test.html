@@ -60,11 +60,11 @@
 				
 				spawn(src);
 				
-				if (this.mateCount > 10) {
+				if (this.mateCount > 5) {
 					kill(this);
 				}
 				
-				if (that.mateCount > 10) {
+				if (that.mateCount > 5) {
 					kill(that);
 				}
 					
@@ -130,10 +130,15 @@
 				for (var i = 0, l=children.length; i < l; i++) {					
 					table.tBodies[0].appendChild(children[i]);
 					
-					// Get rid of the bottom performers					
-					if (children[i].script && !children[i].script.running && median && children[i].script.fields.fitness.innerHTML < median) {
-						kill(children[i].script);
-						killcount++;
+					// Get rid of the bottom performers
+					var isScript = 
+					if (children[i].script) {
+						if (!children[i].script.running) {
+							var fitness = Number(children[i].script.fields.fitness.innerHTML);
+							if ((generation - children[i].script.generation > 10) || median && fitness < median) {
+								kill(children[i].script);
+								killcount++;
+							}
 					}
 					
 				}				
@@ -156,6 +161,7 @@
 					source = randomScript();
 				}
 				var script = new Script(source);
+				script.generation = generation;
 				script.watchdog = 10000;
 				var row = table.insertRow(-1);
 				script.row = row;
@@ -264,7 +270,7 @@
 			for (var i = 0; i < 100; i++) {
 				spawn();
 			}
-			setInterval(breed, 6000);
+			setInterval(breed, 1000);
 		</script>
 	</body>
 </html>
