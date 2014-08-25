@@ -151,9 +151,7 @@ Script.prototype.step = function () {
 						case '[': depth++; break;
 						case ']': depth--; break;
 					}
-					console.log(nextOp + " " + depth);
 				}	
-				console.log(origp + " to " + this.ip);
 				if (this.ip >= this.source.length && depth > 0)
 					this.throw(new SyntaxError("Unmatched [ at "+origp));				
 			} else {
