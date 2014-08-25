@@ -69,7 +69,7 @@
 				
 				script.fields.output.style.overflow = "auto";
 				script.fields.output.style.wordBreak = "break-all";
-				
+				/*
 				script.onerror = function (e) {
 					var row = this.row;
 					$(row).fadeOut(1000, function () {
@@ -77,6 +77,7 @@
 						spawn();
 					});
 				}
+				*/
 				
 				script.onstep = function () {
 					this.fields.time.innerHTML = Math.floor(this.runtime);
@@ -101,6 +102,30 @@
 					this.row.className = this.errorstate ? "warning" : "success";
 					this.fields.status.innerHTML = this.errorstate ? this.errorstate.message : "Complete";
 					this.fields.output.innerHTML = this.output;
+					
+					var fitness = 0;
+					if (!this.errorstate) {
+						fitness += 50;
+					}
+					
+					fitness += this.output.length;
+					
+					var expected = "Hello, World!";
+					
+					for (var i in expected) {
+						var c = expected[i];
+						var s = expected.slice(0, i);
+						
+						if (this.output.search(c) > -1) {
+							fitness += 10;
+						}
+						
+						if (s.length > 1 && this.output.search(s) > -1) {
+							fitness += 100;
+						}
+					}
+					
+					this.fields.fitness.innerHTML = fitness;
 				}
 				script.execute();
 			}
