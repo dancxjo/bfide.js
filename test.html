@@ -16,6 +16,7 @@
 				<th>Steps</th>
 				<th style="width: 20%">Output</th>
 				<th>Data</th>
+				<th>Fitness</th>
 			</tr>
 		</table>
 		<script src="bf.js"></script>
@@ -33,16 +34,12 @@
 			}
 		
 			function spawn() {
-			//var script = new Script("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
 				var source = randomScript();
-				//alert(source);
-				console.log(source);
 				var script = new Script(source);
-				//var script = new Script(",>,[-<->]", "93");
-				//var script = new Script("++++[]", "93");
 				script.watchdog = 1000;
 				var row = table.insertRow(1);
 				script.row = row;
+				row.script = script;
 				
 				script.fields = [];
 				
@@ -61,6 +58,7 @@
 				script.fields.steps = row.insertCell(-1);
 				script.fields.output = row.insertCell(-1);
 				script.fields.data = row.insertCell(-1);
+				script.fields.fitness = row.insertCell(-1);
 				
 				script.fields.data = script.fields.data.appendChild(document.createElement("ol"));
 				script.fields.data.setAttribute("start", 0);
@@ -73,8 +71,11 @@
 				script.fields.output.style.wordBreak = "break-all";
 				
 				script.onerror = function (e) {
-					$(this.row).fadeOut(1000);
-					spawn();
+					var row = this.row;
+					$(row).fadeOut(1000, function () {
+						$(row).remove()
+						spawn();
+					});
 				}
 				
 				script.onstep = function () {
