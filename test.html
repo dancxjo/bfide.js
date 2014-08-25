@@ -96,10 +96,13 @@
 				}
 				
 				avg /= count;
-				if (fs.length % 2) {
-					median = fs[fs.length / 2];
-				} else {
-					median = (fs[Math.floor(fs.length/2)] + fs[Math.ceil(fs.length/2)])/2;
+				fs.sort();				
+				if (!(fs.length % 2)) {					
+					median = fs[fs.length / 2];					
+				} else {					
+					median = fs[Math.floor(fs.length/2)];					
+					median += fs[Math.ceil(fs.length/2)]					
+					median /= 2;					
 				}
 				
 				console.log("min = " + bottom);
