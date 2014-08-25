@@ -60,11 +60,11 @@
 				
 				spawn(src);
 				
-				if (this.mateCount > 5) {
+				if (this.mateCount > 2) {
 					kill(this);
 				}
 				
-				if (that.mateCount > 5) {
+				if (that.mateCount > 2) {
 					kill(that);
 				}
 					
@@ -134,7 +134,10 @@
 					if (children[i].script) {
 						if (!children[i].script.running) {
 							var fitness = Number(children[i].script.fields.fitness.innerHTML);
-							if ((generation - children[i].script.generation > 10) || median && fitness < median) {
+							if (
+								//(generation - children[i].script.generation > 10) || 
+								fitness < avg
+								) {
 								kill(children[i].script);
 								killcount++;
 							}
