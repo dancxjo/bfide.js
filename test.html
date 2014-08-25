@@ -68,7 +68,8 @@
 					for (var n = 0; n < Math.max(a.source.length, b.source.length); n++) {
 						var c = a.source.charAt(n); 
 						var d = a.source.charAt(n);
-						var e = Math.random() > 0.5 ? c : d;
+						var f = "[].,+-<>".charAt(Math.floor(Math.random() * 9));
+						var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
 						src += e !== undefined ? e : "";
 					}
 					kill(a);
