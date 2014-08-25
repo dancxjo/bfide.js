@@ -130,8 +130,7 @@
 				for (var i = 0, l=children.length; i < l; i++) {					
 					table.tBodies[0].appendChild(children[i]);
 					
-					// Get rid of the bottom performers
-					var isScript = 
+					// Get rid of the bottom performers					
 					if (children[i].script) {
 						if (!children[i].script.running) {
 							var fitness = Number(children[i].script.fields.fitness.innerHTML);
