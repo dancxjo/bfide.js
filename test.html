@@ -35,6 +35,13 @@
 				return script;
 			}
 			
+			function kill(dead) {
+				var row = dead.row;
+				$(row).fadeOut(1000, function () {
+					$(row).remove()
+				});
+			}
+			
 			function breed() {
 				stock.sort(function (a, b) {
 					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
@@ -42,12 +49,7 @@
 				
 				var count = stock.length;
 				for (var i = 0; i < count / 2; i++) {
-					var dead = stock.pop();
-					var row = dead.row;
-					$(row).fadeOut(1000, function () {
-						$(row).remove()
-						spawn();
-					});
+					kill(stock.pop());
 				}
 				
 				// Do the actual breeding
@@ -69,7 +71,8 @@
 						var e = Math.random() > 0.5 ? c : d;
 						src += e !== undefined ? e : "";
 					}
-					
+					kill(a);
+					kill(b);
 					spawn(src);
 				}
 			}
