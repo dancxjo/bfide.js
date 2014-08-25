@@ -46,7 +46,12 @@
 				
 				var count = stock.length;
 				for (var i = 0; i < count / 2; i++) {
-					stock.pop();
+					var dead = stock.pop();
+					var row = dead.row;
+					$(row).fadeOut(1000, function () {
+						$(row).remove()
+						spawn();
+					});
 				}
 				
 				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
