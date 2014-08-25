@@ -72,6 +72,11 @@
 						var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
 						src += e !== undefined ? e : "";
 					}
+					
+					console.log(a.source);
+					console.log(b.source);
+					console.log(src);
+					
 					kill(a);
 					kill(b);
 					spawn(src);
@@ -83,7 +88,7 @@
 					source = randomScript();
 				}
 				var script = new Script(source);
-				script.watchdog = 1000;
+				script.watchdog = 10000;
 				var row = table.insertRow(1);
 				script.row = row;
 				row.script = script;
@@ -179,9 +184,9 @@
 					this.fields.fitness.innerHTML = fitness;
 					stock.push(this);
 					
-					if (stock.length > 5) {
-						breed();
-					}
+					//if (stock.length > 5) {
+					//	breed();
+					//}
 				}
 				
 				script.execute();
@@ -191,6 +196,7 @@
 			for (var i = 0; i < 10; i++) {
 				spawn();
 			}
+			setTimer(breed, 60000);
 		</script>
 	</body>
 </html>
