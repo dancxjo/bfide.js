@@ -58,11 +58,11 @@
 				
 				spawn(src);
 				
-				if (this.mateCount > 1) {
+				if (this.mateCount > 10) {
 					kill(this);
 				}
 				
-				if (that.mateCount > 1) {
+				if (that.mateCount > 10) {
 					kill(that);
 				}
 					
@@ -72,15 +72,32 @@
 				// Sort the table according to fitness
 				var bottom = 0;
 				var top = 0;
-				var children = $(table.tBodies[0]).children();				
+				var avg = 0;
+				var count = 0;
+				var children = $(table.tBodies[0]).children();
+				
+				for (var i = 1; i < children.length; i++) {
+					if (!children[i].script.running) {
+						var f = Number(children[i].script.fields.fitness.innerHTML);
+						if (f < bottom) {
+							bottom = f;
+						}
+						
+						if (f > top) {
+							top = f;
+						}
+						
+						count++;
+						avg += f;
+					}
+				}
+				
+				avg /= count;
+				
 				children.sort(function (a, b) {
 					if (!a.script) return -1; // Skip header row
 					var alpha = a.script.fields.fitness.innerHTML;
 					var beta = b.script.fields.fitness.innerHTML;
-					if (alpha !== "" && alpha < bottom) bottom = alpha;
-					if (beta !== "" && beta < bottom) bottom = beta;
-					if (alpha !== "" && alpha > top) top = alpha;
-					if (beta !== "" && beta > top) top = beta;
 					if (alpha === "") return 1;
 					if (beta === "") return -1;
 					return beta - alpha;
@@ -90,7 +107,7 @@
 					table.tBodies[0].appendChild(children[i]);
 					
 					// Get rid of the bottom performers					
-					if (top != bottom && children[i].script && children[i].script.fields.fitness.innerHTML != "" && children[i].script.fields.fitness.innerHTML == bottom) {
+					if (children[i].script && !children[i].script.running && children[i].script.fields.fitness.innerHTML < avg) {
 						kill(children[i].script);
 					}
 					
