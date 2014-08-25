@@ -36,20 +36,20 @@
 			}
 			
 			function breed() {
-				alert(stock.map(function (el) {return el.fitness.innerHTML}));
+				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
 				
 				stock.sort(function (a, b) {
 					return a.fields.fitness.innerHTML - b.fields.fitness.innerHTML;
 				});
 				
-				alert(stock.map(function (el) {return el.fitness.innerHTML}));
+				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
 				
 				var count = stock.length;
 				for (var i = 0; i < count / 2; i++) {
 					stock.pop();
 				}
 				
-				alert(stock.map(function (el) {return el.fitness.innerHTML}));
+				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
 			}
 		
 			function spawn() {
