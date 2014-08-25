@@ -60,11 +60,11 @@
 				
 				spawn(src);
 				
-				if (this.mateCount > 2) {
+				if (this.mateCount > 10) {
 					kill(this);
 				}
 				
-				if (that.mateCount > 2) {
+				if (that.mateCount > 10) {
 					kill(that);
 				}
 					
@@ -148,64 +148,7 @@
 				
 				for (var i = 1, l = children.length / 3; i < l; i++) {
 					children[i].script.mate(children[i+1].script);
-				}
-				
-				/*
-				var count = stock.length;
-				for (var i = 0; i < count / 2; i++) {
-					kill(stock.pop());
-				}
-				count = stock.length;
-				//console.log(stock);
-				// Do the actual breeding
-				for (var i = stock.length - 1; i >= 0; i--) {
-					var j = i;
-					// Select a mate from the stock
-					while (j == i) {
-						j = Math.floor(Math.random() * stock.length);
-					}
-					
-					var a = stock[i];
-					//console.log(i);
-					var b = stock[j];										
-					//console.log(j);
-					
-					var src = "";
-					
-					for (var n = 0; n < Math.max(a.source.length, b.source.length); n++) {
-						var c = a.source.charAt(n); 
-						var d = b.source.charAt(n);
-						var f = "[].,+-<>".charAt(Math.floor(Math.random() * 9));
-						var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
-						src += e !== undefined ? e : "";
-					}
-					
-					//console.log(a.source);
-					//console.log(b.source);
-					//console.log(src);
-					
-					kill(a);
-					//kill(b);
-					
-					stock.splice(i, 1);
-					//stock.splice(j, 1);
-					
-					spawn(src);
-					
-				}
-				
-				//stock.sort(function (a, b) {
-//					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
-				//});
-				
-				//var count = stock.length;
-				//for (var i = 0; i < count - 10; i++) {
-				//	kill(stock.pop());
-				//}
-				
-				//stock.splice(0, count);
-				//stock.splice(0, 10);				
-				*/
+				}				
 			}
 		
 			function spawn(source) {
@@ -286,7 +229,7 @@
 					
 					var fitness = 0;
 					if (!this.errorstate) {
-						fitness += 50;
+						fitness += 5;
 					}
 					
 					fitness += this.output.length;
