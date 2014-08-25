@@ -74,6 +74,8 @@
 				var top = 0;
 				var avg = 0;
 				var count = 0;
+				var fs = [];
+				var median = 0;
 				var children = $(table.tBodies[0]).children();
 				
 				for (var i = 1; i < children.length; i++) {
@@ -89,10 +91,21 @@
 						
 						count++;
 						avg += f;
+						fs.push(f);
 					}
 				}
 				
 				avg /= count;
+				if (fs.length % 2) {
+					median = fs[fs.length / 2];
+				} else {
+					median = (fs[Math.floor(fs.length/2)] + fs[Math.ceil(fs.length/2)])/2;
+				}
+				
+				console.log("min = " + bottom);
+				console.log("max = " + top);
+				console.log("mean = " + avg);
+				console.log("median = " + median);
 				
 				children.sort(function (a, b) {
 					if (!a.script) return -1; // Skip header row
@@ -107,7 +120,7 @@
 					table.tBodies[0].appendChild(children[i]);
 					
 					// Get rid of the bottom performers					
-					if (children[i].script && !children[i].script.running && children[i].script.fields.fitness.innerHTML < avg) {
+					if (children[i].script && !children[i].script.running && median && children[i].script.fields.fitness.innerHTML < median) {
 						kill(children[i].script);
 					}
 					
