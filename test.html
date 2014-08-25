@@ -22,8 +22,8 @@
 		<script src="bf.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script>
-			var stock = [];
+		<script>			
+			var generation = 1;
 			
 			function randomScript() {
 				var len = Math.random() * 255;
@@ -42,18 +42,76 @@
 				});
 			}
 			
-			function breed() {
-				stock.sort(function (a, b) {
-					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
-				});
+			Script.prototype.mate = function (that) {
+				this.mateCount++;
+				that.mateCount++;
 				
+				var src = "";
+					
+				for (var n = 0; n < Math.max(this.source.length, that.source.length); n++) {
+					var c = this.source.charAt(n); 
+					var d = that.source.charAt(n);
+					var f = "[].,+-<>".charAt(Math.floor(Math.random() * 9));
+					var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
+					src += e !== undefined ? e : "";
+				}
+				
+				spawn(src);
+				
+				if (this.mateCount > 1) {
+					kill(this);
+				}
+				
+				if (that.mateCount > 1) {
+					kill(that);
+				}
+					
+			}
+			
+			function breed() {				
+				// Sort the table according to fitness
+				var bottom = 0;
+				var top = 0;
+				var children = $(table.tBodies[0]).children();				
+				children.sort(function (a, b) {
+					if (!a.script) return -1; // Skip header row
+					var alpha = a.script.fields.fitness.innerHTML;
+					var beta = b.script.fields.fitness.innerHTML;
+					if (alpha !== "" && alpha < bottom) bottom = alpha;
+					if (beta !== "" && beta < bottom) bottom = beta;
+					if (alpha !== "" && alpha > top) top = alpha;
+					if (beta !== "" && beta > top) top = beta;
+					if (alpha === "") return 1;
+					if (beta === "") return -1;
+					return beta - alpha;
+				});								
+				
+				for (var i = 0, l=children.length; i < l; i++) {					
+					table.tBodies[0].appendChild(children[i]);
+					
+					// Get rid of the bottom performers					
+					if (top != bottom && children[i].script && children[i].script.fields.fitness.innerHTML != "" && children[i].script.fields.fitness.innerHTML == bottom) {
+						kill(children[i].script);
+					}
+					
+				}				
+							
+				console.log("Beginning generation " + generation++);
+				
+				children = $(table.tBodies[0]).children();
+				for (var i = 1, l = children.length / 3; i < l; i++) {
+					children[i].script.mate(children[i+1].script);
+				}
+				
+				/*
 				var count = stock.length;
 				for (var i = 0; i < count / 2; i++) {
 					kill(stock.pop());
 				}
-				
+				count = stock.length;
+				//console.log(stock);
 				// Do the actual breeding
-				for (var i = 0; i < stock.length; i++) {
+				for (var i = stock.length - 1; i >= 0; i--) {
 					var j = i;
 					// Select a mate from the stock
 					while (j == i) {
@@ -61,26 +119,46 @@
 					}
 					
 					var a = stock[i];
-					var b = stock[j];
+					//console.log(i);
+					var b = stock[j];										
+					//console.log(j);
 					
 					var src = "";
 					
 					for (var n = 0; n < Math.max(a.source.length, b.source.length); n++) {
 						var c = a.source.charAt(n); 
-						var d = a.source.charAt(n);
+						var d = b.source.charAt(n);
 						var f = "[].,+-<>".charAt(Math.floor(Math.random() * 9));
 						var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
 						src += e !== undefined ? e : "";
 					}
 					
-					console.log(a.source);
-					console.log(b.source);
-					console.log(src);
+					//console.log(a.source);
+					//console.log(b.source);
+					//console.log(src);
 					
 					kill(a);
-					kill(b);
+					//kill(b);
+					
+					stock.splice(i, 1);
+					//stock.splice(j, 1);
+					
 					spawn(src);
+					
 				}
+				
+				//stock.sort(function (a, b) {
+//					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
+				//});
+				
+				//var count = stock.length;
+				//for (var i = 0; i < count - 10; i++) {
+				//	kill(stock.pop());
+				//}
+				
+				//stock.splice(0, count);
+				//stock.splice(0, 10);				
+				*/
 			}
 		
 			function spawn(source) {
@@ -89,7 +167,7 @@
 				}
 				var script = new Script(source);
 				script.watchdog = 10000;
-				var row = table.insertRow(1);
+				var row = table.insertRow(-1);
 				script.row = row;
 				row.script = script;
 				
@@ -140,13 +218,13 @@
 					}
 					
 					this.fields.source.innerHTML = this.highlightCode("span", {class: 'bg-primary'}, -1);		
-					
+					/*
 					this.fields.data.innerHTML = this.data.map(function (el) {
 						return "<li>" + el + "</li>";
 					}).join("");
 					if (this.fields.data.children[this.dp])
 						this.fields.data.children[this.dp].setAttribute("style", "text-decoration:underline");
-
+					*/
 					this.fields.output.innerHTML = this.output;
 				}
 				
@@ -156,7 +234,7 @@
 				
 				script.onend = function () {
 					this.updateRow();
-					this.row.className = this.errorstate ? "warning" : "success";
+					this.row.className = this.errorstate ? "danger" : "success";
 					this.fields.status.innerHTML = this.errorstate ? this.errorstate.message : "Complete";
 					
 					var fitness = 0;
@@ -182,7 +260,7 @@
 					}
 					
 					this.fields.fitness.innerHTML = fitness;
-					stock.push(this);
+					//stock.push(this);
 					
 					//if (stock.length > 5) {
 					//	breed();
@@ -193,10 +271,10 @@
 			}
 		
 			var table = document.getElementById("progs");
-			for (var i = 0; i < 10; i++) {
+			for (var i = 0; i < 100; i++) {
 				spawn();
 			}
-			setTimer(breed, 60000);
+			setInterval(breed, 6000);
 		</script>
 	</body>
 </html>
