@@ -36,13 +36,9 @@
 			}
 			
 			function breed() {
-				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
-				
 				stock.sort(function (a, b) {
 					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
 				});
-				
-				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
 				
 				var count = stock.length;
 				for (var i = 0; i < count / 2; i++) {
@@ -54,11 +50,34 @@
 					});
 				}
 				
-				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
+				// Do the actual breeding
+				for (var i = 0; i < stock.length; i++) {
+					var j = i;
+					// Select a mate from the stock
+					while (j == i) {
+						j = Math.floor(Math.random() * stock.length);
+					}
+					
+					var a = stock[i];
+					var b = stock[j];
+					
+					var src = "";
+					
+					for (var n = 0; n < Math.max(a.source.length, b.source.length); n++) {
+						var c = a.source.charAt(n); 
+						var d = a.source.charAt(n);
+						var e = Math.random() > 0.5 ? c : d;
+						src += e !== undefined ? e : "";
+					}
+					
+					spawn(src);
+				}
 			}
 		
-			function spawn() {
-				var source = randomScript();
+			function spawn(source) {
+				if (source == undefined) {
+					source = randomScript();
+				}
 				var script = new Script(source);
 				script.watchdog = 1000;
 				var row = table.insertRow(1);
