@@ -37,9 +37,11 @@
 			
 			function kill(dead) {
 				var row = dead.row;
+				$(row).remove();
+				/*
 				$(row).fadeOut(1000, function () {
 					$(row).remove()
-				});
+				});*/
 			}
 			
 			Script.prototype.mate = function (that) {
@@ -58,17 +60,19 @@
 				
 				spawn(src);
 				
-				if (this.mateCount > 10) {
+				if (this.mateCount > 2) {
 					kill(this);
 				}
 				
-				if (that.mateCount > 10) {
+				if (that.mateCount > 2) {
 					kill(that);
 				}
 					
 			}
 			
 			function breed() {				
+				console.log("Beginning generation " + generation++);
+				
 				// Sort the table according to fitness
 				var bottom = 0;
 				var top = 0;
@@ -77,6 +81,8 @@
 				var fs = [];
 				var median = 0;
 				var children = $(table.tBodies[0]).children();
+				
+				console.log(children.length + " scripts left");
 				
 				for (var i = 1; i < children.length; i++) {
 					if (!children[i].script.running) {
@@ -117,7 +123,9 @@
 					if (alpha === "") return 1;
 					if (beta === "") return -1;
 					return beta - alpha;
-				});								
+				});						
+				
+				var killcount = 0;		
 				
 				for (var i = 0, l=children.length; i < l; i++) {					
 					table.tBodies[0].appendChild(children[i]);
@@ -125,13 +133,19 @@
 					// Get rid of the bottom performers					
 					if (children[i].script && !children[i].script.running && median && children[i].script.fields.fitness.innerHTML < median) {
 						kill(children[i].script);
+						killcount++;
 					}
 					
 				}				
 							
-				console.log("Beginning generation " + generation++);
+								
+				console.log(killcount + " killed");
+				
 				
 				children = $(table.tBodies[0]).children();
+				
+				console.log(children.length + " remaining");
+				
 				for (var i = 1, l = children.length / 3; i < l; i++) {
 					children[i].script.mate(children[i+1].script);
 				}
