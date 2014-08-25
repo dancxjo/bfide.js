@@ -39,7 +39,7 @@
 				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
 				
 				stock.sort(function (a, b) {
-					return a.fields.fitness.innerHTML - b.fields.fitness.innerHTML;
+					return b.fields.fitness.innerHTML - a.fields.fitness.innerHTML;
 				});
 				
 				alert(stock.map(function (el) {return el.fields.fitness.innerHTML}));
