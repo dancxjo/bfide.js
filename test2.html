@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+		
+	</head>
+	<body>
+		<table id="progs" class="table table-condensed table-hover">
+			<tr>
+				<th style="width: 20%">Source</th>
+				<th>Status</th>
+				<th>Run time</th>
+				<th>Steps</th>
+				<th style="width: 20%">Output</th>
+				<th>Data</th>
+				<th>Fitness</th>
+			</tr>
+		</table>
+				
+		<script src="bf.js"></script>
+		<script src="flower.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script>
+			var waiting = 0;
+			var generation = 0;
+			
+			function sort() {								
+				// Sort the table according to fitness
+				var table = document.getElementById("progs");				
+				var children = $(table.tBodies[0]).children();												
+				
+				children.sort(function (a, b) {
+					if (!a.script) return -1; // Skip header row
+					
+					var alpha = a.script.getFitness();
+					a.script.fitness = alpha;
+					var beta = b.script.getFitness();
+					b.script.fitness = beta;
+										
+					var d = beta - alpha;
+					if (d == 0) {
+						b.script.source.localeCompare(a.script.source);
+					} else return d;
+				});						
+				
+				for (var i = 0; i < children.length; i++) {
+						$(table).append(children[i]);
+				}				
+			}
+			
+			function breed() {								
+				console.log("Breeding generation " + ++generation);
+				// Sort the table according to fitness
+				sort();				
+				
+				var table = document.getElementById("progs");
+				var bottom = 0;
+				var top = 0;
+				var avg = 0;
+				var count = 0;
+				var fs = [];
+				var median = 0;
+				var children = $(table.tBodies[0]).children();								
+				
+				for (var i = 1; i < children.length; i++) {
+					if (!children[i].script.running) {
+						var f = Number(children[i].script.fields.fitness.innerHTML);
+						if (f < bottom) {
+							bottom = f;
+						}
+						
+						if (f > top) {
+							top = f;
+						}
+						
+						count++;
+						avg += f;
+						fs.push(f);
+					}
+				}
+				
+				avg /= count;
+				fs.sort();				
+				if (!(fs.length % 2)) {					
+					median = fs[fs.length / 2];					
+				} else {					
+					median = fs[Math.floor(fs.length/2)];					
+					median += fs[Math.ceil(fs.length/2)]					
+					median /= 2;					
+				}
+				console.log("min = " + bottom);
+				console.log("max = " + top);
+				console.log("mean = " + avg);
+				console.log("median = " + median);		
+				var killcount = 0;
+								
+				for (var i = 1; i < children.length / 2; i++) {
+					$(table).append(children[i]);						
+				}				
+								
+				for (var i = children.length / 2; i < children.length; i++) {
+					children[i].script.row = null;
+					children[i].script = null;						
+					$(children[i]).remove();
+					killcount++;												
+				}												
+				
+				var eggs = [];
+				
+				var children = $(table.tBodies[0]).children();				
+				for (var i = children.length - 1; i > 1; i--) {
+					var j = Math.floor(Math.random() * (children.length - i - 1)) + 1;					
+					eggs.push(children[i].script.makeEgg(children[j].script));
+					if (children[i].script.fitness <= median) {
+						children[i].script.row = null;
+						children[i].script = null;
+						$(children[i]).remove();
+						killcount++;
+					}
+				}
+				
+				console.log("Killed " + killcount);
+				
+				for (var i = 0; i < eggs.length; i++) {
+					var candidate = genScript(eggs[i]);
+					waiting++;				
+					helloFlower.test(candidate);
+				}
+			}
+			
+			function genScript(src) {								
+				var script = new Script(src ? src : randomSource());
+				script.watchdog = 1000;
+				var row = script.row = document.getElementById("progs").insertRow(-1);								
+				row.script = script;
+				script.fields = {};
+				script.fields.source = row.insertCell(-1).appendChild(document.createElement("code"));
+				script.fields.status = row.insertCell(-1);
+				script.fields.runtime  = row.insertCell(-1);
+				script.fields.steps  = row.insertCell(-1);
+				script.fields.output = row.insertCell(-1);
+				script.fields.output.style.wordBreak = "break-all";
+				
+				var data   = row.insertCell(-1).appendChild(document.createElement("div"));
+				$(data).addClass("dropdown");
+				
+				var dropdown = data.appendChild(document.createElement("button"));
+				$(dropdown).addClass("btn btn-default dropdown-toggle");
+				$(dropdown).attr("data-toggle", "dropdown");
+				$(dropdown).html('<span class="caret"></span>');	
+				
+				script.fields.data = data.appendChild(document.createElement("ul"));
+				$(script.fields.data).addClass("dropdown-menu");
+				$(script.fields.data).attr("role", "menu");
+				
+				script.fields.fitness = row.insertCell(-1);
+				
+				$(script.fields.data).attr("start", 0);
+				
+				script.update = function () {								
+					$(this.fields.source).html(this.highlightCode("span", {class: "bg-primary"}, -1));
+					$(this.fields.status).html(this.running ? "Running" : this.errorstate ? this.errorstate.message : "Complete");
+					if (this.errorstate) {
+						$(this.row).addClass("danger");
+						$(this.row).removeClass("active");
+						$(this.row).removeClass("success");
+					} else if (!this.running) {
+						$(this.row).addClass("success");
+						$(this.row).removeClass("active");
+						$(this.row).removeClass("danger");						
+					} else {
+						$(this.row).addClass("active");
+						$(this.row).removeClass("success");
+						$(this.row).removeClass("danger");
+					}
+					
+					var i = 0;
+					var dp = this.dp;
+					$(this.fields.data).html(this.data.map(
+						function (el) { 
+							var head =  '<span class="label label-' + (i == dp ? "primary" : "default") + '">'+(i++)+'</span>';							
+							return "<li role='presentation'><a role='menuitem'>" + head + " " + el + "</a></li>"; 
+						}).join(""));
+					if ($(this.fields.data).children[this.dp]) 
+						$(this.fields.data).children[this.dp].attr("style", "text-decoration:underline");
+					$(this.fields.fitness).html(this.getFitness());
+					$(this.fields.runtime).html(Math.floor(this.runtime));
+					$(this.fields.steps).html(Math.floor(this.steps));
+					$(this.fields.output).html(this.output);
+				}
+				
+				script.onstep = function () {
+					this.update();
+				}
+				
+				script.onend = function () {
+					this.update();
+					waiting--;
+					sort();
+					if (waiting == 0) {												
+						breed();
+					}
+				}
+				
+				return script;
+			}
+						
+			for (var i = 0; i < 100; i++) {
+				var candidate = genScript();
+				waiting++;				
+				helloFlower.test(candidate);
+			}
+		</script>
+	</body>
+</html>
