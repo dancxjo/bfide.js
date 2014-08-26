@@ -7,7 +7,7 @@ function Script(source, input) {
 	this.ip = 0;
 	this.inputp = 0;
 	this.cs = [];
-	this.runing = false;
+	this.running = false;
 	this.timeout = null;
 	this.errorstate = 0;
 	this.steps = 0;
@@ -21,7 +21,7 @@ Script.prototype.onstart = function () {
 
 Script.prototype.throw = function (e) {
 	this.errorstate = e;
-	this.terminate();
+	//this.terminate();
 	this.onerror(e);
 }
 
@@ -32,6 +32,27 @@ Script.prototype.onend = function () {
 }
 
 Script.prototype.onstep = function () {
+}
+
+Script.prototype.getFitness = function () {
+	return;
+}
+
+Script.prototype.makeEgg = function (that) {	
+	this.mateCount++;
+	that.mateCount++;
+	
+	var src = "";
+		
+	for (var n = 0; n < Math.max(this.source.length, that.source.length); n++) {
+		var c = this.source.charAt(n); 
+		var d = that.source.charAt(n);
+		var f = "[].,+-<>".charAt(Math.floor(Math.random() * 9));
+		var e = Math.random() > 0.9 ? f : Math.random() > 0.5 ? c : d;
+		src += e !== undefined ? e : "";
+	}
+	
+	return src;
 }
 
 Script.prototype.terminate = function () {
@@ -73,6 +94,7 @@ Script.prototype.execute = function (continuing) {
 			this.timeout = window.setTimeout(function(){self.execute();}, this.delay);
 		} else {
 			this.throw(new Error("Watchdog exceeded"));
+			this.terminate();
 		}
 	}
 }
@@ -89,6 +111,10 @@ Script.prototype.rawExecute = function () {
 }
 
 Script.prototype.highlightCode = function (el, attr, offset) {
+	if (!el) {
+		el = "span";
+		attr = {class: "bg-primary"};
+	}
 	var s = "";
 	var h = this.source.substr(0, this.ip + offset);
 	var m = this.source[this.ip + offset];
@@ -186,4 +212,14 @@ Script.prototype.step = function () {
 	this.ip++;
 	
 
+}
+
+function randomSource() {
+	var len = Math.random() * 255;
+	var chars = "[]<>+-.,";
+	var script = "";
+	for (var i = 0; i < len; i++) {
+		script += chars[Math.floor(Math.random()*chars.length)];
+	}
+	return script;
 }
