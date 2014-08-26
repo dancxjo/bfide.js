@@ -101,26 +101,31 @@
 				for (var i = 1; i < children.length / 2; i++) {
 					$(table).append(children[i]);						
 				}				
-								
+				
 				for (var i = children.length / 2; i < children.length; i++) {
-					children[i].script.row = null;
-					children[i].script = null;						
-					$(children[i]).remove();
-					killcount++;												
-				}												
+					if (children[i]) {
+						delete children[i].script.row;
+						delete children[i].script;						
+						$(children[i]).remove();
+						killcount++;						
+					}						
+				}
+														
 				
 				var eggs = [];
 				
 				var children = $(table.tBodies[0]).children();				
 				for (var i = children.length - 1; i > 1; i--) {
-					var j = Math.floor(Math.random() * (children.length - i - 1)) + 1;					
+					var j = Math.floor(Math.random() * (children.length - i - 1)) + 1;
+					console.log(children[i]);
+					console.log(children[j]);					
 					eggs.push(children[i].script.makeEgg(children[j].script));
-					if (children[i].script.fitness <= median) {
-						children[i].script.row = null;
-						children[i].script = null;
-						$(children[i]).remove();
-						killcount++;
-					}
+					//if (children[i].script.fitness <= median) {
+					//	delete children[i].script.row;
+					//	delete children[i].script;
+					//	$(children[i]).remove();
+					//	killcount++;
+					//}
 				}
 				
 				console.log("Killed " + killcount);
